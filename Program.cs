@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using DataAccess.Models;
+using Microsoft.Data.SqlClient;
 
 namespace DataAccess;
 
@@ -8,31 +10,15 @@ public class Program
     {
         const string connectionString = "Server=localhost,1433;Database=balta;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=Yes;";
 
-        // Microsoft.Data.SqlClient
-        // var connection = new SqlConnection();
-        // connection.Open();
-        // connection.Close();
-        // connection.Dispose();
-
         using (var connection = new SqlConnection(connectionString))
         {
-            System.Console.WriteLine("Conectado!");
-            connection.Open();
+            // IEnumerable<dynamic>
+            IEnumerable<Category> categories = connection.Query<Category>("SELECT [Id], [Title] From [Category]");
 
-            using (var command = new SqlCommand())
+            foreach (Category category in categories)
             {
-                command.Connection = connection;
-                command.CommandType = System.Data.CommandType.Text;
-                command.CommandText = "SELECT [Id], [Title] FROM [Category]";
-
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    Console.WriteLine($"{reader.GetGuid(0)} - {reader.GetString(1)}");
-                }
+                System.Console.WriteLine($"{category.Id} - {category.Title}");
             }
         }
-
-        Console.WriteLine("Hello, World!");
     }
 }
