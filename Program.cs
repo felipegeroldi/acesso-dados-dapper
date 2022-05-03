@@ -9,6 +9,25 @@ public class Program
     static void Main(string[] args)
     {
         const string connectionString = "Server=localhost,1433;Database=balta;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=Yes;";
+        using (var connection = new SqlConnection(connectionString))
+        {
+            // CreateCategory(connection);
+            UpdateCategory(connection);
+            ListCategories(connection);
+        }
+    }
+
+    static void ListCategories(SqlConnection connection)
+    {
+        IEnumerable<Category> categories = connection.Query<Category>("SELECT [Id], [Title] From [Category]");
+        foreach (Category item in categories)
+        {
+            Console.WriteLine($"{item.Id} - {item.Title}");
+        }
+    }
+
+    static void CreateCategory(SqlConnection connection)
+    {
         var category = new Category()
         {
             Id = Guid.NewGuid(),
@@ -31,28 +50,30 @@ public class Program
                 @Description,
                 @Featured)";
 
-        using (var connection = new SqlConnection(connectionString))
+        int affectedRows = connection.Execute(insertSql, new
         {
-            int affectedRows = connection.Execute(insertSql, new
-            {
-                Id = category.Id,
-                Title = category.Title,
-                Url = category.Url,
-                Summary = category.Summary,
-                Order = category.Order,
-                Description = category.Description,
-                Featured = category.Featured,
-            });
+            Id = category.Id,
+            Title = category.Title,
+            Url = category.Url,
+            Summary = category.Summary,
+            Order = category.Order,
+            Description = category.Description,
+            Featured = category.Featured,
+        });
 
-            Console.WriteLine($"{affectedRows} linhas inseridas.");
+        Console.WriteLine($"{affectedRows} linhas inseridas.");
+    }
 
-            // IEnumerable<dynamic>
-            IEnumerable<Category> categories = connection.Query<Category>("SELECT [Id], [Title] From [Category]");
+    static void UpdateCategory(SqlConnection connection)
+    {
+        var updateCategory = "UPDATE [Category] SET [Title]=@title WHERE [Id]=@id";
 
-            foreach (Category item in categories)
-            {
-                Console.WriteLine($"{item.Id} - {item.Title}");
-            }
-        }
+        int affectedRows = connection.Execute(updateCategory, new
+        {
+            id = new Guid("af3407aa-11ae-4621-a2ef-2028b85507c4"),
+            title = "FrontEnd 2021",
+        });
+
+        Console.WriteLine($"{affectedRows} registros atualizados.");
     }
 }
