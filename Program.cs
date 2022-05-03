@@ -9,16 +9,49 @@ public class Program
     static void Main(string[] args)
     {
         const string connectionString = "Server=localhost,1433;Database=balta;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=Yes;";
+        var category = new Category()
+        {
+            Id = Guid.NewGuid(),
+            Title = "Amazon AWS",
+            Url = "amazon",
+            Description = "Categoria destinada a serviços do AWS",
+            Order = 8,
+            Summary = "AWS Cloud",
+            Featured = false
+        };
+
+        var insertSql = @"INSERT INTO
+                [Category] 
+            VALUES(
+                @Id,
+                @Title,
+                @Url,
+                @Summary,
+                @Order,
+                @Description,
+                @Featured)";
 
         using (var connection = new SqlConnection(connectionString))
         {
-            // IEnumerable<dynamic>
-            // Pode se utilizar alias na consulta para auxiliar no mapeamento
-            IEnumerable<Category> categories = connection.Query<Category>("SELECT [Id] as [Codigo], [Title] as [Titulo] From [Category]");
-
-            foreach (Category category in categories)
+            int affectedRows = connection.Execute(insertSql, new
             {
-                System.Console.WriteLine($"{category.Codigo} - {category.Titulo}");
+                Id = category.Id,
+                Title = category.Title,
+                Url = category.Url,
+                Summary = category.Summary,
+                Order = category.Order,
+                Description = category.Description,
+                Featured = category.Featured,
+            });
+
+            Console.WriteLine($"{affectedRows} linhas inseridas.");
+
+            // IEnumerable<dynamic>
+            IEnumerable<Category> categories = connection.Query<Category>("SELECT [Id], [Title] From [Category]");
+
+            foreach (Category item in categories)
+            {
+                Console.WriteLine($"{item.Id} - {item.Title}");
             }
         }
     }
