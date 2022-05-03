@@ -12,7 +12,8 @@ public class Program
         using (var connection = new SqlConnection(connectionString))
         {
             // CreateCategory(connection);
-            UpdateCategory(connection);
+            // UpdateCategory(connection);
+            CreateManyCategory(connection);
             ListCategories(connection);
         }
     }
@@ -59,6 +60,65 @@ public class Program
             Order = category.Order,
             Description = category.Description,
             Featured = category.Featured,
+        });
+
+        Console.WriteLine($"{affectedRows} linhas inseridas.");
+    }
+
+    static void CreateManyCategory(SqlConnection connection)
+    {
+        var category = new Category()
+        {
+            Id = Guid.NewGuid(),
+            Title = "Amazon AWS",
+            Url = "amazon",
+            Description = "Categoria destinada a serviços do AWS",
+            Order = 8,
+            Summary = "AWS Cloud",
+            Featured = false
+        };
+
+        var category2 = new Category()
+        {
+            Id = Guid.NewGuid(),
+            Title = "Categoria Nova",
+            Url = "categoria-nova",
+            Description = "Categoria nova",
+            Order = 9,
+            Summary = "Categoria",
+            Featured = true
+        };
+
+        var insertSql = @"INSERT INTO
+                [Category] 
+            VALUES(
+                @Id,
+                @Title,
+                @Url,
+                @Summary,
+                @Order,
+                @Description,
+                @Featured)";
+
+        int affectedRows = connection.Execute(insertSql, new[] {
+            new {
+                Id = category.Id,
+                Title = category.Title,
+                Url = category.Url,
+                Summary = category.Summary,
+                Order = category.Order,
+                Description = category.Description,
+                Featured = category.Featured,
+            },
+            new {
+                Id = category2.Id,
+                Title = category2.Title,
+                Url = category2.Url,
+                Summary = category2.Summary,
+                Order = category2.Order,
+                Description = category2.Description,
+                Featured = category2.Featured,
+            }
         });
 
         Console.WriteLine($"{affectedRows} linhas inseridas.");
