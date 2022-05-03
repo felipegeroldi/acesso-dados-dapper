@@ -19,7 +19,8 @@ public class Program
             // ExecuteProcedure(connection);
             // ExecuteReadProcedure(connection);
             // ExecuteScalar(connection);
-            ReadView(connection);
+            // ReadView(connection);
+            OneToOne(connection);
         }
     }
 
@@ -222,6 +223,30 @@ public class Program
         foreach (var item in courses)
         {
             Console.WriteLine($"{item.Id} - {item.Title}");
+        }
+    }
+
+    static void OneToOne(SqlConnection connection)
+    {
+        var sql = @"
+            SELECT
+                *
+            FROM
+                [CareerItem]
+            INNER JOIN
+                [Course] ON [CareerItem].[CourseId] = [Course].[Id]";
+
+        var items = connection.Query<CareerItem, Course, CareerItem>(
+            sql,
+            (careerItem, course) =>
+            {
+                careerItem.Course = course;
+                return careerItem;
+            }, splitOn: "Id");
+
+        foreach (var item in items)
+        {
+            Console.WriteLine($"{item.Title} - Curso: {item.Course.Title}");
         }
     }
 }
