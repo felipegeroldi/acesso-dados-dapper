@@ -13,11 +13,12 @@ public class Program
         using (var connection = new SqlConnection(connectionString))
         {
             // IEnumerable<dynamic>
-            IEnumerable<Category> categories = connection.Query<Category>("SELECT [Id], [Title] From [Category]");
+            // Pode se utilizar alias na consulta para auxiliar no mapeamento
+            IEnumerable<Category> categories = connection.Query<Category>("SELECT [Id] as [Codigo], [Title] as [Titulo] From [Category]");
 
             foreach (Category category in categories)
             {
-                System.Console.WriteLine($"{category.Id} - {category.Title}");
+                System.Console.WriteLine($"{category.Codigo} - {category.Titulo}");
             }
         }
     }
