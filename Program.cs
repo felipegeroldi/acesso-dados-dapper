@@ -23,7 +23,7 @@ public class Program
             // OneToOne(connection);
             // OneToMany(connection);
             // QueryMultiple(connection);
-            SelectIn(connection);
+            Like(connection);
         }
     }
 
@@ -330,6 +330,22 @@ public class Program
                 "01ae8a85-b4e8-4194-a0f1-1c6190af54cb",
                 "e6730d1c-6870-4df3-ae68-438624e04c72"
             }
+        });
+
+        foreach (var item in careers)
+        {
+            System.Console.WriteLine(item.Title);
+        }
+    }
+
+    static void Like(SqlConnection connection)
+    {
+        var term = "api";
+        var query = "SELECT * FROM [Course] WHERE [Title] LIKE @exp";
+
+        var careers = connection.Query<Course>(query, new
+        {
+            exp = $"%{term}%"
         });
 
         foreach (var item in careers)
