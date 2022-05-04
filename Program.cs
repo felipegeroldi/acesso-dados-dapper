@@ -23,7 +23,8 @@ public class Program
             // OneToOne(connection);
             // OneToMany(connection);
             // QueryMultiple(connection);
-            Like(connection);
+            // Like(connection);
+            Transaction(connection);
         }
     }
 
@@ -351,6 +352,49 @@ public class Program
         foreach (var item in careers)
         {
             System.Console.WriteLine(item.Title);
+        }
+    }
+
+    static void Transaction(SqlConnection connection)
+    {
+        connection.Open();
+        using (var transaction = connection.BeginTransaction())
+        {
+            var category = new Category()
+            {
+                Id = Guid.NewGuid(),
+                Title = "Categoria não salvar",
+                Url = "Nao-salvar",
+                Description = "Categoria errada",
+                Order = 8,
+                Summary = "Erro",
+                Featured = false
+            };
+
+            var insertSql = @"INSERT INTO
+                    [Category] 
+                VALUES(
+                    @Id,
+                    @Title,
+                    @Url,
+                    @Summary,
+                    @Order,
+                    @Description,
+                    @Featured)";
+
+            int affectedRows = connection.Execute(insertSql, new
+            {
+                Id = category.Id,
+                Title = category.Title,
+                Url = category.Url,
+                Summary = category.Summary,
+                Order = category.Order,
+                Description = category.Description,
+                Featured = category.Featured,
+            }, transaction);
+
+            Console.WriteLine($"{affectedRows} linhas inseridas.");
+            transaction.Rollback();
         }
     }
 }
