@@ -22,7 +22,8 @@ public class Program
             // ReadView(connection);
             // OneToOne(connection);
             // OneToMany(connection);
-            QueryMultiple(connection);
+            // QueryMultiple(connection);
+            SelectIn(connection);
         }
     }
 
@@ -316,6 +317,24 @@ public class Program
             {
                 Console.WriteLine(item.Title);
             }
+        }
+    }
+
+    static void SelectIn(SqlConnection connection)
+    {
+        var query = "SELECT * FROM [Career] WHERE [Id] IN @Id";
+
+        var careers = connection.Query<Career>(query, new
+        {
+            Id = new[] {
+                "01ae8a85-b4e8-4194-a0f1-1c6190af54cb",
+                "e6730d1c-6870-4df3-ae68-438624e04c72"
+            }
+        });
+
+        foreach (var item in careers)
+        {
+            System.Console.WriteLine(item.Title);
         }
     }
 }
